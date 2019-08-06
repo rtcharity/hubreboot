@@ -5,6 +5,7 @@ from django.contrib.auth import mixins as auth_mixins
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST
@@ -40,6 +41,21 @@ class LocalGroupCreateView(auth_mixins.LoginRequiredMixin, edit_views.CreateView
 
 class LocalGroupDetailView(detail_views.DetailView):
     model = LocalGroup
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.id in self.object.organisers.values_list("id", flat=True):
+            _filter = {}
+        else:
+            _filter = {"profile__is_public": True}
+        for field in ["organisers", "past_organisers"]:
+            context["visible_" + field] = (
+                getattr(self.object, field)
+                .filter(Q(**_filter))
+                .order_by("profile__name", "profile__slug")
+            )
+        return context
+
     template_name = "eahub/group.html"
     context_object_name = "group"
 
