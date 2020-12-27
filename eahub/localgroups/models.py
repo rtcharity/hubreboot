@@ -9,7 +9,8 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django_enumfield import enum
-from geopy import geocoders
+
+from ..base.geocoding import Geocoding
 
 from ..base.models import User
 
@@ -95,9 +96,7 @@ class LocalGroup(models.Model):
         self.lat = None
         self.lon = None
         if self.city_or_town and self.country:
-            location = geocoders.Nominatim(timeout=10).geocode(
-                f"{self.city_or_town}, {self.country}"
-            )
+            location = Geocoding.geocode(self.city_or_town, self.country)
             if location:
                 self.lat = location.latitude
                 self.lon = location.longitude

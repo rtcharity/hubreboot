@@ -17,13 +17,13 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django_enumfield import enum
 from django_upload_path import upload_path
-from geopy import geocoders
 from sluggable import fields as sluggable_fields
 from sluggable import models as sluggable_models
 from sluggable import settings as sluggable_settings
 from sorl import thumbnail
 from sorl.thumbnail import get_thumbnail
 
+from ..base.geocoding import Geocoding
 from ..localgroups.models import LocalGroup
 
 
@@ -331,9 +331,7 @@ class Profile(models.Model):
         self.lat = None
         self.lon = None
         if self.city_or_town and self.country:
-            location = geocoders.Nominatim(timeout=10).geocode(
-                f"{self.city_or_town}, {self.country}"
-            )
+            location = Geocoding.geocode(self.city_or_town, self.country)
             if location:
                 self.lat = location.latitude
                 self.lon = location.longitude
