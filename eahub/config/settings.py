@@ -34,13 +34,12 @@ DEBUG = env.bool("DEBUG")
 vars().update(
     env.email_url("EMAIL_URL", backend="django.core.mail.backends.smtp.EmailBackend")
 )
-ADMINS = list(env.dict("ADMINS").items())
+ADMINS = env.list("ADMINS", "EA Hub Tech Team=admins@eahub.org")
 DEFAULT_FROM_EMAIL = "EA Hub <admin@eahub.org>"
-GROUPS_EMAIL = env.str("GROUPS_EMAIL")
+GROUPS_EMAIL = env.str("GROUPS_EMAIL", "groups@centreforeffectivealtruism.org")
 EMAIL_SUBJECT_PREFIX = "[EA Hub] "
 MANAGERS = ADMINS
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
-
 
 if DJANGO_ENV == DjangoEnv.LOCAL:
     CACHES = {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
@@ -75,7 +74,7 @@ USE_L10N = True
 USE_TZ = True
 
 # Core settings: HTTP
-ALLOWED_HOSTS = env.list("HOSTS") + ["127.0.0.1", "*"]
+ALLOWED_HOSTS = env.list("HOSTS") + ["*"]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -93,7 +92,7 @@ MIDDLEWARE = [
 ]
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_SSL_REDIRECT = env.bool("HTTPS")
+SECURE_SSL_REDIRECT = env.bool("HTTPS", True)
 if SECURE_SSL_REDIRECT:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
@@ -102,7 +101,7 @@ from .build_settings import INSTALLED_APPS  # noqa: E402,F401; isort:skip
 
 # Core settings: security
 CSRF_COOKIE_SECURE = SECURE_SSL_REDIRECT
-SECRET_KEY = env.bytes("SECRET_KEY")
+SECRET_KEY = env.bytes("SECRET_KEY", "development_secret_key")
 X_FRAME_OPTIONS = "DENY"
 
 # Core settings: templates
@@ -256,7 +255,7 @@ ADMIN_SITE_HEADER = "EA Hub Staff Portal"
 BLACKLISTED_EMAIL_PATTERNS = env.list("BLACKLISTED_EMAIL_PATTERNS", default=[])
 
 # Local groups
-LEAN_MANAGERS = list(env.dict("LEAN_MANAGERS").items())
+LEAN_MANAGERS = env.list("LEAN_MANAGERS", "Lean Org = lean@eahub.org")
 local_groups_airtable_api_key = env.str("LOCAL_GROUPS_AIRTABLE_API_KEY", default=None)
 local_groups_airtable_base_key = env.str("LOCAL_GROUPS_AIRTABLE_BASE_KEY", default=None)
 if local_groups_airtable_api_key is None and local_groups_airtable_base_key is None:
