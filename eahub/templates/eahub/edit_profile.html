@@ -12,8 +12,6 @@
 {% block content %}
   {% addtoblock 'body_classes' %}profile-edit-body{% endaddtoblock %}
 
-  {% include 'includes/messages.html' %}
-
   <script>
     const DJANGO = {
       algoliaApiKey: `{{ settings.ALGOLIA.API_KEY_READ_ONLY }}`,
